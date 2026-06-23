@@ -27,8 +27,11 @@ def health():
         return jsonify({
             "status": "healthy",
             "cpu": cpu,
+            "cpu_percent": cpu,
             "memory": memory,
-            "disk": disk
+            "memory_percent": memory,
+            "disk": disk,
+            "disk_percent": disk
         }), 200
     except Exception as e:
         return jsonify({
