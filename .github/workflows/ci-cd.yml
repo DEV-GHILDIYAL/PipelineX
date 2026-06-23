@@ -60,31 +60,11 @@ jobs:
     name: Trigger Deploy via Jenkins
     needs: build
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
       - name: Trigger Jenkins Pipeline Webhook
         run: |
           curl -X POST "${{ secrets.JENKINS_URL }}/job/PipelineX/build?token=${{ secrets.JENKINS_TOKEN }}"
 
-  railway-deploy:
-    name: Deploy to Railway Live Environment
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Install Railway CLI
-        run: npm i -g @railway/cli
-
-      - name: Deploy to Railway
-        run: railway up --detach
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-      - name: Print Live URL
-        run: |
-          echo "PipelineX deployed successfully!"
-          echo "Live URL: https://pipelinex.railway.app"
 
