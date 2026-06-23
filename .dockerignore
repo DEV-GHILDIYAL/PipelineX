@@ -1,0 +1,24 @@
+# Exclude python cache files
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+
+# Exclude virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Exclude version control and local configs
+.git/
+.gitignore
+.dockerignore
+docker-compose.yml
+README.md
+LICENSE
+
+# Exclude temporary ide files
+.idea/
+.vscode/
+.gemini/
