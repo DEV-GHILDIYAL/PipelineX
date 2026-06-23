@@ -1,0 +1,34 @@
+# Environment variables (MUST NEVER BE COMMITTED)
+.env
+.env.local
+.env.*
+
+# Python caches and binaries
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# System specific files
+.DS_Store
+Thumbs.db
+
+# Build, packaging, and distribution artifacts
+dist/
+build/
+*.egg-info/
+
+# Node dependencies
+node_modules/
+
+# IDE files
+.vscode/
+.idea/
+.gemini/

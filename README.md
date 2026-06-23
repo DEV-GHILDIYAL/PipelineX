@@ -1,83 +1,112 @@
-# PipelineX — DevOps Monitoring & Deployment Dashboard
+# PipelineX
+
+```text
+ ____ ___ ____  _____ _     ___ _   _ _____  __  __
+|  _ \_ _|  _ \| ____| |   |_ _| \ | | ____| \ \/ /
+| |_) | || |_) |  _| | |    | ||  \| |  _|    \  / 
+|  __/| ||  __/| |___| |___ | || |\  | |___   /  \ 
+|_|  |___|_|   |_____|_____|___|_| \_|_____| /_/\_\
+```
 
 [![CI/CD Build & Publish](https://github.com/DEV-GHILDIYAL/PipelineX/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/DEV-GHILDIYAL/PipelineX/actions/workflows/ci-cd.yml)
 [![Docker Pulls](https://img.shields.io/docker/pulls/aixerdev/pipelinex.svg)](https://hub.docker.com/r/aixerdev/pipelinex)
+[![Railway Deployment](https://img.shields.io/badge/Railway-Deployed-blueviolet.svg?style=flat&logo=railway)](https://pipelinex.railway.app)
 
-PipelineX is a DevOps Monitoring & Deployment Dashboard. It tracks system resources (CPU, RAM, Disk) in real time and details deployment execution history using a sleek, glassmorphic dark-theme interface.
+PipelineX is a real-time, high-performance DevOps Monitoring & Deployment Dashboard designed to streamline server administration and lifecycle tracking. It displays instant system telemetry (CPU, RAM, and Disk storage usage) alongside a rich history of recent microservice deployments in a sleek glassmorphic dark-theme design.
 
----
-
-## CI/CD Pipeline Architecture
-
-```
-+------------------+       Push       +-------------------+
-|                  | --------------> |                   |
-|  Developer Work  |                 |  GitHub Actions   |
-|                  |                 |                   |
-+------------------+                 +-------------------+
-                                               |
-                                     (1) Test  | (2) Build & Push
-                                               v
-                                     +-------------------+
-                                     |    Docker Hub     |
-                                     | aixerdev/pipelinex|
-                                     +-------------------+
-                                               |
-                                     (3) Deploy Trigger (Webhook POST)
-                                               v
-+------------------+      Pull Image  +-------------------+
-|  Production Host | <-------------- |  Jenkins Server   |
-| (Docker Runtime) |                 | (Local Executor)  |
-+------------------+                 +-------------------+
-```
+🔗 **[Live Demo URL](https://pipelinex.railway.app)**
 
 ---
 
-## Required GitHub Secrets
+## 🛠️ Tech Stack
 
-To connect the CI/CD stages correctly, navigate to your repository's **Settings > Secrets and variables > Actions** and add the following:
+| Technology | Purpose | Badge / Icon |
+| :--- | :--- | :--- |
+| **Python 3.11** | Backend execution runtime | ![Python](https://img.shields.io/badge/python-3670A0?style=flat&logo=python&logoColor=ffdd54) |
+| **Flask** | Micro-web framework core | ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=flat&logo=flask&logoColor=white) |
+| **Gunicorn** | Production WSGI application server | ![Gunicorn](https://img.shields.io/badge/gunicorn-%23293E40.svg?style=flat&logo=gunicorn&logoColor=red) |
+| **Docker & Compose** | Containerized build & isolation | ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white) |
+| **GitHub Actions** | Automated CI builds, tests, and publishes | ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232088FF.svg?style=flat&logo=github-actions&logoColor=white) |
+| **Jenkins** | Orchestrates deployment stages in local network | ![Jenkins](https://img.shields.io/badge/jenkins-%23D33833.svg?style=flat&logo=jenkins&logoColor=white) |
+| **Railway** | Live hosting environment | ![Railway](https://img.shields.io/badge/railway-%23000000.svg?style=flat&logo=railway&logoColor=white) |
+
+---
+
+## 📐 Architecture Workflow
+
+The PipelineX CI/CD lifecycle is completely automated:
+
+```
+GitHub Push ──> GitHub Actions (ci-cd.yml) ──> Docker Hub (aixerdev/pipelinex)
+                              │
+                              ├──> Jenkins Pipeline (Local Deployment Host)
+                              │
+                              └──> Railway (Live Web Host Deployment)
+                                          │
+                                          └──> PipelineX Dashboard (Live UI)
+```
+
+---
+
+## ✨ Features
+
+- **Live Telemetry circle gauges**: Real-time visualization of CPU, RAM, and Disk storage.
+- **30-second Auto-Refresh**: Seamless AJAX fetching updates metrics and logs without reloading.
+- **Deployment Audits**: Clean histories displaying unique Deployment IDs, services, versions, timestamps, and durations.
+- **Responsive Layout**: Designed via customized CSS variables adapting perfectly to desktop and mobile screens.
+- **Fail-safe Health Validation**: Jenkins declarative pipelines strictly verify health keys (fails build on application failure).
+
+---
+
+## 🔑 GitHub Secrets Configuration
+
+To run the automated pipelines, configure these variables under your repository's **Settings > Secrets and variables > Actions**:
 
 | Secret Name | Description | Example |
 | :--- | :--- | :--- |
-| `DOCKERHUB_USERNAME` | Your Docker Hub account ID. | `aixerdev` |
-| `DOCKERHUB_TOKEN` | Secure Docker Hub access token (not password). | `dckr_pat_...` |
-| `JENKINS_URL` | Base url of the target Jenkins instance. | `http://jenkins.example.com:8080` |
-| `JENKINS_TOKEN` | The secret trigger token set inside the Jenkins job configuration. | `54d92a95c80...` |
+| `DOCKERHUB_USERNAME` | Docker Hub profile handle. | `aixerdev` |
+| `DOCKERHUB_TOKEN` | Generated secure access token. | `dckr_pat_...` |
+| `JENKINS_URL` | Base endpoint of your Jenkins instance. | `http://jenkins-server.com:8080` |
+| `JENKINS_TOKEN` | Custom webhook secret key for job triggering. | `54d92a95c80...` |
+| `RAILWAY_TOKEN` | Deploy token generated in the Railway project. | `rw_tok_...` |
 
 ---
 
-## Jenkins Pipeline Setup
+## 🚀 Local Development Setup
 
-To configure Jenkins for executing builds triggered from the GitHub Action runner:
+To run PipelineX locally on your computer:
 
-1. **Prerequisites**:
-   - Install **Docker** on the Jenkins agent machine.
-   - Configure Jenkins user group permissions to run Docker commands without `sudo` (e.g. `sudo usermod -aG docker jenkins`).
-   - Install the **Pipeline** and **GitHub Integration** plugins.
-2. **Create Job**:
-   - Create a new **Pipeline** job named `PipelineX`.
-3. **Configure Build Triggers**:
-   - Check **Build when a change is pushed to GitHub**.
-   - (Optional) Use a webhook token in the job config parameters matching the secret `JENKINS_TOKEN` value to permit remote triggering via REST endpoint: `/job/PipelineX/build?token=JENKINS_TOKEN`.
-4. **Define Pipeline Script**:
-   - Set the Definition field to **Pipeline script from SCM**.
-   - Choose **Git** as the SCM.
-   - Set the repository URL to `https://github.com/DEV-GHILDIYAL/PipelineX.git`.
-   - Set the branch specifier to `*/main`.
-   - Set the Script Path to `Jenkinsfile`.
-5. **Run**: Save the configuration. When code is pushed to `main`, GitHub Actions will build/push the image, trigger the webhook, and Jenkins will pull, clean, deploy, and verify the deployment health.
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/DEV-GHILDIYAL/PipelineX.git
+   cd PipelineX
+   ```
+
+2. **Configure environment variables**:
+   ```bash
+   copy .env.example .env
+   # Edit .env with your secrets
+   ```
+
+3. **Deploy using Docker Compose**:
+   ```bash
+   docker compose up --build -d
+   ```
+   Access the dashboard at `http://localhost:5000/`.
 
 ---
 
-## Local Development & Manual Setup
+## 🤝 Contributing
 
-To test the application locally without full Docker builds:
+Contributions are welcome! Please follow these guidelines:
+- Fork the repository.
+- Create a feature branch: `git checkout -b feature/your-awesome-feature`.
+- Commit changes and submit a Pull Request.
 
-```bash
-# 1. Install dependencies
-pip install -r requirements.txt
+---
 
-# 2. Run Flask server locally
-python app.py
-```
-Access the dashboard at `http://localhost:5000/`.
+## 📄 License
+
+Distributed under the MIT License. See [LICENSE](file:///d:/Github/PipelineX/LICENSE) for more information.
+
+Copyright (c) 2026 Dev Lalit Ghildiyal.

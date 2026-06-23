@@ -1,0 +1,12 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "DOCKER",
+    "buildCommand": "docker build -t pipelinex ."
+  },
+  "deploy": {
+    "startCommand": "gunicorn app:app --bind 0.0.0.0:5000",
+    "port": 5000,
+    "restartPolicyType": "ALWAYS"
+  }
+}
